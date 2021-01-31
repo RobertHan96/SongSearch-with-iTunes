@@ -1,11 +1,3 @@
-//
-//  AppDelegate.swift
-//  SongSearch
-//
-//  Created by joonwon lee on 02/04/2019.
-//  Copyright © 2019 joonwon.lee. All rights reserved.
-//
-
 import UIKit
 
 @UIApplicationMain
