@@ -5,6 +5,7 @@ class SearchViewController: UIViewController {
     let maxHeight: CGFloat = 70.0
     let minHeight: CGFloat = 0.0
     let titleLabel = UILabel()
+    var isFirstLoad = true
     @IBOutlet weak var headerView: UIView!
     @IBOutlet weak var headerViewHeight: NSLayoutConstraint! {
         didSet {
@@ -46,8 +47,6 @@ class SearchViewController: UIViewController {
         self.searchCollectionView.dataSource = self
         searchCollectionView.register(UINib(nibName: "SearchResultCell", bundle: nil),
             forCellWithReuseIdentifier: "SearchResultCell")
-        searchCollectionView.register(UINib(nibName: "EmptyResultCell", bundle: nil),
-            forCellWithReuseIdentifier: "EmptyResultCell")
         setupFlowLayout()
     }
     
@@ -66,7 +65,13 @@ class SearchViewController: UIViewController {
 
 extension SearchViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return tracks.count
+        if (self.tracks.count == 0 && isFirstLoad == false) {
+            self.searchCollectionView.setEmptyMessage("검색결과가 없네요 :(")
+        } else {
+            self.searchCollectionView.restore()
+        }
+
+        return self.tracks.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -104,8 +109,13 @@ extension SearchViewController: UICollectionViewDelegate {
 extension SearchViewController: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         dismissKeyboard()
+        isFirstLoad = false
+        if searchBar.text?.isEmpty == true {
+            self.searchCollectionView.setEmptyMessage("검색어를 입력해주세요 :)")
+            return
+        }
+
         print("LOG - 검색 시작...")
-        // TODO: Search Code
         guard let searchText = searchBar.text, searchText.isEmpty == false else { return }
         
         var urlComponents = URLComponents(string: "https://itunes.apple.com/search?media=music&entity=musicVideo")!
